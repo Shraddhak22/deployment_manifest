@@ -1,0 +1,59 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nodejs
+  labels:
+    app.kubernetes.io/instance: nodejs
+    app.kubernetes.io/name: nodejs
+    app.kubernetes.io/part-of: nodejs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nodejs
+    spec:
+      containers:
+        - name: nodejs
+          image: nodejs
+          ports:
+            - name: http
+              containerPort: PORT
+              protocol: TCP
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nodejs
+spec:
+  ports:
+    - protocol: TCP
+      port: PORT
+      targetPort: PORT
+  selector:
+    app: nodejs
+  type: ClusterIP
+  sessionAffinity: None
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: nodejs
+  labels:
+    app.kubernetes.io/instance: nodejs
+    app.kubernetes.io/name: nodejs
+    app.kubernetes.io/part-of: nodejs
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  to:
+    kind: Service
+    name: COMPONENT_NAME
+    weight: 100
+  port:
+    targetPort: PORT
+  wildcardPolicy: None
