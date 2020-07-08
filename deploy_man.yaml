@@ -22,7 +22,7 @@ spec:
           image: nodejs
           ports:
             - name: http
-              containerPort: PORT
+              containerPort: 8080
               protocol: TCP
 ---
 kind: Service
@@ -32,8 +32,8 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: PORT
-      targetPort: PORT
+      port: 8080
+      targetPort: 8080
   selector:
     app: nodejs
   type: ClusterIP
@@ -52,8 +52,8 @@ metadata:
 spec:
   to:
     kind: Service
-    name: COMPONENT_NAME
+    name: nodejs
     weight: 100
   port:
-    targetPort: PORT
+    targetPort: 8080
   wildcardPolicy: None
